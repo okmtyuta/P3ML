@@ -7,14 +7,14 @@ class CCSRegressor(torch.nn.Module):
         embed: torch.nn.Module,
         posenc: torch.nn.Module,
         pool: torch.nn.Module,
-        charge: torch.nn.Module,
+        concat: torch.nn.Module,
         head: torch.nn.Module,
     ):
         super().__init__()
         self.embed = embed
         self.posenc = posenc
         self.pool = pool
-        self.charge = charge
+        self.concat = concat
         self.head = head
 
     def forward(
@@ -26,7 +26,7 @@ class CCSRegressor(torch.nn.Module):
         y = self.embed(X)
         y = self.posenc(y)
         y = self.pool(y, L)
-        y = self.charge(y, Ip)
+        y = self.concat(y, Ip)
         y = self.head(y)
 
         return y

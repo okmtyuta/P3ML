@@ -8,13 +8,29 @@ from src.modules.model.ccs_regressor import CCSRegressor
 from src.modules.protein.protein import Protein
 
 
-def test(regressor: CCSRegressor, code: str, proteins: list[Protein], output_props: list[str], ckpt_path: str):
+def test(
+    regressor: CCSRegressor,
+    code: str,
+    proteins: list[Protein],
+    output_props: list[str],
+    input_props: list[str],
+    ckpt_path: str,
+):
     plg.seed_everything(42)
 
-    dataset = ProteinDataset(proteins=proteins, output_props=output_props)
+    dataset = ProteinDataset(
+        proteins=proteins,
+        output_props=output_props,
+        input_props=input_props,
+    )
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=32, shuffle=False, collate_fn=collate_fn)
 
-    lit = LitMultiTask.load_from_checkpoint(ckpt_path, core=regressor, target_names=output_props)
+    lit = LitMultiTask.load_from_checkpoint(
+        checkpoint_path=ckpt_path,
+        core=regressor,
+        output_props=output_props,
+        input_props=input_props,
+    )
 
     logger = CSVLogger("logs", name=code)
     trainer = plg.Trainer(

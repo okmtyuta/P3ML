@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pytorch_lightning as plg
 import torch
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
@@ -15,6 +17,8 @@ def train(
     proteins: list[Protein],
     output_props: list[str],
     input_props: list[str],
+    patience: int = 100,
+    max_epochs: Optional[int] = None,
 ):
     plg.seed_everything(42)
 
@@ -60,9 +64,9 @@ def train(
         # persistent_workers=True,
     )
 
-    lit = LitMultiTask(core=regressor, lr=1e-3, target_names=output_props)
+    lit = LitMultiTask(core=regressor, lr=1e-3, output_props=output_props, input_props=input_props)
 
-    early_stop = EarlyStopping(monitor="val/accuracy", mode="max", patience=8)
+    early_stop = EarlyStopping(monitor="val/accuracy", mode="max", patience=patience)
     ckpt = ModelCheckpoint(monitor="val/accuracy", mode="max", save_top_k=1, filename="best")
 
     logger = CSVLogger("logs", name=code)
@@ -70,7 +74,7 @@ def train(
     trainer = plg.Trainer(
         accelerator="cpu",
         devices=1,
-        max_epochs=5,
+        max_epochs=max_epochs,
         callbacks=[early_stop, ckpt],
         logger=logger,
         precision="32-true",
@@ -80,4 +84,5 @@ def train(
     trainer.fit(lit, train_dataloaders=train_loader, val_dataloaders=val_loader)
     trainer.test(lit, dataloaders=test_loader, ckpt_path=ckpt.best_model_path)
 
-    torch.save(regressor, f"{logger.log_dir}/model.pt")
+    torch.save(regressor.state_dict(), f"{logger.log_dir}/weight.pt")
+    torch.save(regressor.embed.state_dict(), f"{logger.log_dir}/embed_weight.pt")

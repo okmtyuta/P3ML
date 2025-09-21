@@ -27,11 +27,11 @@ class ProteinDataset(torch.utils.data.Dataset):
 
         ip = torch.tensor([protein.read_props(t) for t in self._input_props], dtype=torch.float32)
 
-        return x, y, ip
+        return x, y, ip, protein
 
 
 def collate_fn(batch):
-    xs, ys, ips = zip(*batch)
+    xs, ys, ips, proteins = zip(*batch)
 
     L = torch.tensor([x.shape[0] for x in xs], dtype=torch.long)
     Lmax, A = int(L.max()), xs[0].shape[1]
@@ -43,4 +43,4 @@ def collate_fn(batch):
     Y = torch.stack([torch.as_tensor(y, dtype=torch.float32) for y in ys])
     Ip = torch.stack([torch.as_tensor(ip, dtype=torch.float32) for ip in ips])
 
-    return X, Y, Ip, L
+    return X, Y, Ip, L, proteins
