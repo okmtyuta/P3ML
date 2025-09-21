@@ -7,6 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "fair-esm>=2.0.0",
     "h5py>=3.14.0",
+    "matplotlib>=3.10.6",
     "polars>=1.33.1",
     "pytorch-lightning>=2.5.5",
     "ruff>=0.13.1",
