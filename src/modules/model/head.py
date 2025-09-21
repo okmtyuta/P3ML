@@ -2,10 +2,9 @@ import torch
 
 
 class Head(torch.nn.Module):
-    def __init__(self, in_dim: int, out_dim: int):
+    def __init__(self, in_dim: int, hidden_dim: int, out_dim: int):
         super().__init__()
 
-        hidden_dim = 64
         self.net = torch.nn.Sequential(
             torch.nn.Linear(in_dim, hidden_dim),
             torch.nn.ReLU(),
