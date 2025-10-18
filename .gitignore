@@ -15,8 +15,9 @@ wheels/
 outputs
 
 # data
-# *.csv
+*.csv
 *.xls
+
 # cache
 .mypy_cache
 .ruff_cache
