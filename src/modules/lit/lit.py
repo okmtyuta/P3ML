@@ -1,4 +1,3 @@
-# src/modules/lit_ccs/lit_ccs.py
 from typing import Dict
 
 import polars as pl
@@ -9,33 +8,37 @@ from schedulefree import RAdamScheduleFree
 from torchmetrics import PearsonCorrCoef
 
 
-class LitMultiTask(plg.LightningModule):
+class Lit(plg.LightningModule):
     def __init__(
         self,
-        core: torch.nn.Module,
+        model: torch.nn.Module,
         lr: float,
         output_props: list[str],
         input_props: list[str],
     ):
         super().__init__()
-        self.core = core
+        self.model = model
         self.lr = lr
 
-        self.output_props = list(output_props)
-        self.input_props = list(input_props)
+        self.output_props = output_props
+        self.input_props = input_props
 
-        self.T = len(self.output_props)
-
-        self.train_corr: Dict[str, PearsonCorrCoef] = {name: PearsonCorrCoef() for name in self.output_props}
-        self.val_corr: Dict[str, PearsonCorrCoef] = {name: PearsonCorrCoef() for name in self.output_props}
-        self.test_corr: Dict[str, PearsonCorrCoef] = {name: PearsonCorrCoef() for name in self.output_props}
+        self.train_corr: Dict[str, PearsonCorrCoef] = {
+            name: PearsonCorrCoef() for name in self.output_props
+        }
+        self.val_corr: Dict[str, PearsonCorrCoef] = {
+            name: PearsonCorrCoef() for name in self.output_props
+        }
+        self.test_corr: Dict[str, PearsonCorrCoef] = {
+            name: PearsonCorrCoef() for name in self.output_props
+        }
 
         self._test_records: list = []
 
-        self.save_hyperparameters(ignore=["core"])
+        self.save_hyperparameters(ignore=["model"])
 
     def forward(self, X: torch.Tensor, Ip: torch.Tensor, L: torch.Tensor) -> torch.Tensor:
-        out = self.core(X, Ip, L)
+        out = self.model(X, Ip, L)
         if out.dim() == 1:
             out = out.unsqueeze(1)
         return out
@@ -63,7 +66,6 @@ class LitMultiTask(plg.LightningModule):
                 loss_t,
                 on_step=False,
                 on_epoch=True,
-                prog_bar=True,
                 batch_size=X.size(0),
             )
             losses.append(loss_t)
@@ -93,7 +95,6 @@ class LitMultiTask(plg.LightningModule):
                 loss_t,
                 on_step=False,
                 on_epoch=True,
-                prog_bar=True,
                 batch_size=X.size(0),
             )
 
@@ -104,7 +105,7 @@ class LitMultiTask(plg.LightningModule):
             self.log(f"val/pearsonr/{name}", r)
             corr_sum += float(r)
 
-        self.log("val/accuracy", corr_sum)
+        self.log("val/accuracy", corr_sum, prog_bar=True)
 
     def on_test_epoch_start(self):
         for m in self.test_corr.values():
@@ -128,7 +129,6 @@ class LitMultiTask(plg.LightningModule):
                 loss_t,
                 on_step=False,
                 on_epoch=True,
-                prog_bar=True,
                 batch_size=X.size(0),
             )
 

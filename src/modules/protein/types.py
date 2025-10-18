@@ -2,8 +2,15 @@ from typing import Literal, Optional, TypedDict
 
 import torch
 
-ProteinLanguageName = Literal["esm2", "esm1b", "pwesm1b", "pwesm2", "onehot"]
-protein_language_names: list[ProteinLanguageName] = ["esm2", "esm1b", "pwesm1b", "pwesm2", "onehot"]
+ProteinLanguageName = Literal["esm2", "esm1b", "pwesm1b", "pwesm2", "onehot", "saprot"]
+protein_language_names: list[ProteinLanguageName] = [
+    "esm2",
+    "esm1b",
+    "pwesm1b",
+    "pwesm2",
+    "onehot",
+    "saprot",
+]
 
 
 ProteinProps = dict[str, str | int | float]

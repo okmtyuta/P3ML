@@ -13,14 +13,10 @@ class ESMConverter:
         self._model_name = model_name
         self._model, self._alphabet = self._get_model_and_alphabet()
         self._batch_converter = self._alphabet.get_batch_converter()
-
-        self._model = self._model
         self._model.eval()
 
     def __call__(self, seqs: list[str]) -> list[torch.Tensor]:
         batch_tokens = self._batch_converter([(seq, seq) for seq in seqs])[2]
-
-        batch_tokens = batch_tokens
         batch_lens = (batch_tokens != self._alphabet.padding_idx).sum(1)
 
         with torch.no_grad():

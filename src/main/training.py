@@ -6,13 +6,12 @@ from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.loggers import CSVLogger
 
 from src.modules.dataloader.dataset import ProteinDataset, collate_fn
-from src.modules.lit.lit import LitMultiTask
-from src.modules.model.ccs_regressor import CCSRegressor
+from src.modules.lit.lit import Lit
 from src.modules.protein.protein import Protein
 
 
 def train(
-    regressor: CCSRegressor,
+    model: torch.nn.Module,
     code: str,
     proteins: list[Protein],
     output_props: list[str],
@@ -44,27 +43,21 @@ def train(
         batch_size=32,
         shuffle=True,
         collate_fn=collate_fn,
-        # num_workers=4,
-        # persistent_workers=True,
     )
     val_loader = torch.utils.data.DataLoader(
         val_set,
         batch_size=32,
         shuffle=False,
         collate_fn=collate_fn,
-        # num_workers=4,
-        # persistent_workers=True,
     )
     test_loader = torch.utils.data.DataLoader(
         test_set,
         batch_size=32,
         shuffle=False,
         collate_fn=collate_fn,
-        # num_workers=4,
-        # persistent_workers=True,
     )
 
-    lit = LitMultiTask(core=regressor, lr=1e-3, output_props=output_props, input_props=input_props)
+    lit = Lit(model=model, lr=1e-3, output_props=output_props, input_props=input_props)
 
     early_stop = EarlyStopping(monitor="val/accuracy", mode="max", patience=patience)
     ckpt = ModelCheckpoint(monitor="val/accuracy", mode="max", save_top_k=1, filename="best")
@@ -84,5 +77,5 @@ def train(
     trainer.fit(lit, train_dataloaders=train_loader, val_dataloaders=val_loader)
     trainer.test(lit, dataloaders=test_loader, ckpt_path=ckpt.best_model_path)
 
-    torch.save(regressor.state_dict(), f"{logger.log_dir}/weight.pt")
-    torch.save(regressor.embed.state_dict(), f"{logger.log_dir}/embed_weight.pt")
+    torch.save(model.state_dict(), f"{logger.log_dir}/weight.pt")
+    # torch.save(regressor.embed.state_dict(), f"{logger.log_dir}/embed_weight.pt")

@@ -7,6 +7,7 @@ from src.modules.extract.language.esm.esm2 import ESM2Language
 from src.modules.extract.language.onehot.onehot_language import OnehotLanguage
 from src.modules.extract.language.pwesm.pwesm1b import PWESM1bLanguage
 from src.modules.extract.language.pwesm.pwesm2 import PWESM2Language
+from src.modules.extract.language.saprot.saprot import SaProtLanguage
 from src.modules.protein.protein_list import ProteinList
 from src.modules.protein.types import ProteinLanguageName
 
@@ -29,10 +30,17 @@ class ExtractionRunnerConfig:
             return PWESM2Language()
         elif self.protein_language_name == "onehot":
             return OnehotLanguage()
+        elif self.protein_language_name == "saprot":
+            return SaProtLanguage()
         else:
             raise ValueError(f"Unsupported language model: {self.protein_language_name}")
 
+    def ensure(self):
+        self.output_path.parent.mkdir(exist_ok=True, parents=True)
+
     def run(self) -> ProteinList:
+        self.ensure()
+
         print(f"Loading protein data from: {self.csv_path}")
         protein_list = ProteinList.from_csv(path=self.csv_path)
         proteins = protein_list.proteins
