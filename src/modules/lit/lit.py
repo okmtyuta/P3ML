@@ -23,15 +23,9 @@ class Lit(plg.LightningModule):
         self.output_props = output_props
         self.input_props = input_props
 
-        self.train_corr: Dict[str, PearsonCorrCoef] = {
-            name: PearsonCorrCoef() for name in self.output_props
-        }
-        self.val_corr: Dict[str, PearsonCorrCoef] = {
-            name: PearsonCorrCoef() for name in self.output_props
-        }
-        self.test_corr: Dict[str, PearsonCorrCoef] = {
-            name: PearsonCorrCoef() for name in self.output_props
-        }
+        self.train_corr: Dict[str, PearsonCorrCoef] = {name: PearsonCorrCoef() for name in self.output_props}
+        self.val_corr: Dict[str, PearsonCorrCoef] = {name: PearsonCorrCoef() for name in self.output_props}
+        self.test_corr: Dict[str, PearsonCorrCoef] = {name: PearsonCorrCoef() for name in self.output_props}
 
         self._test_records: list = []
 

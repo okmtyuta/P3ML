@@ -4,8 +4,8 @@ from src.main.extraction import ExtractionRunnerConfig
 
 cfg = ExtractionRunnerConfig(
     csv_path=Path("data/schwanhausser/logarithm.csv"),
-    output_path=Path("source/schwanhausser/saprot/saprot_logarithm.h5"),
-    protein_language_name="saprot",
+    output_path=Path("source/schwanhausser/esm2/logarithm.h5"),
+    protein_language_name="esm2",
     batch_size=1,
 )
 
