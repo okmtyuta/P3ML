@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from pathlib import Path
+import platform
 
+from src.modules.slack_service import SlackService
 from src.modules.extract.extractor.extractor import Extractor
 from src.modules.extract.language.esm.esm1b import ESM1bLanguage
 from src.modules.extract.language.esm.esm2 import ESM2Language
@@ -41,6 +43,15 @@ class ExtractionRunnerConfig:
     def run(self) -> ProteinList:
         self.ensure()
 
+
+        server_name = platform.node()
+        slack_service = SlackService()
+
+        try:
+            slack_service.send(f'[{server_name}] extraction started: {self.csv_path} by {self.protein_language_name}')
+        except Exception as e:
+            print(f'Slack notification was failed because of {e}')
+
         print(f"Loading protein data from: {self.csv_path}")
         protein_list = ProteinList.from_csv(path=self.csv_path)
         proteins = protein_list.proteins
@@ -57,5 +68,10 @@ class ExtractionRunnerConfig:
         print(f"Saving results to: {self.output_path}")
         protein_list.to_hdf5(self.output_path)
         print(f"ExtractionRunner completed successfully for {len(proteins)} proteins")
+
+        try:
+            slack_service.send(f'[{server_name}] extraction end: {self.csv_path} by {self.protein_language_name}')
+        except Exception as e:
+            print(f'Slack notification was failed because of {e}')
 
         return protein_list
