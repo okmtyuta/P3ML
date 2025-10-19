@@ -109,8 +109,8 @@ def main() -> None:
         result = train()
         results.append(result)
 
-        with open(Helper.ROOT / "logs" / code / "results.json", mode="w") as f:
-            f.write(json.dumps(results))
+    with open(Helper.ROOT / "logs" / code / "results.json", mode="w") as f:
+        f.write(json.dumps(results))
 
     try:
         slack_service.send(f"[{server_name}] training end")
