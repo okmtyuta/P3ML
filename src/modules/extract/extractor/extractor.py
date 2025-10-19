@@ -1,4 +1,5 @@
 from tqdm import tqdm
+
 from src.modules.extract.language._language import _Language
 from src.modules.protein.protein import Protein
 

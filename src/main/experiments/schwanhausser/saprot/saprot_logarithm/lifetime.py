@@ -5,9 +5,9 @@ import torch
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.loggers import CSVLogger
 
+from modules.model.regressor import LifetimeRegressor
 from src.modules.dataloader.dataset import ProteinDataset, collate_fn
 from src.modules.lit.lit import Lit
-from src.modules.model.lifetime_regressor import LifetimeRegressor
 from src.modules.protein.protein_list import ProteinList
 
 

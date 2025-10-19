@@ -115,12 +115,40 @@ class Lit(plg.LightningModule):
         y_pred = pred.detach().cpu().numpy()
 
         for t, name in enumerate(self.output_props):
-            self.test_corr[name].update(pred[:, t], Y[:, t])
+            x = pred[:, t]
+            y = Y[:, t]
 
-            loss_t = F.mse_loss(pred[:, t], Y[:, t])
+            self.test_corr[name].update(x, y)
+
+            mse = F.mse_loss(x, y)
+            mae = F.l1_loss(x, y)
+
             self.log(
                 f"test/loss/{name}",
-                loss_t,
+                mse,
+                on_step=False,
+                on_epoch=True,
+                batch_size=X.size(0),
+            )
+            self.log(
+                f"test/rmse/{name}",
+                mse.sqrt(),
+                on_step=False,
+                on_epoch=True,
+                batch_size=X.size(0),
+            )
+            self.log(
+                f"test/mae/{name}",
+                mae,
+                on_step=False,
+                on_epoch=True,
+                batch_size=X.size(0),
+            )
+
+            delta95 = torch.quantile(torch.abs(x - y), 0.95)
+            self.log(
+                f"test/delta95/{name}",
+                delta95,
                 on_step=False,
                 on_epoch=True,
                 batch_size=X.size(0),

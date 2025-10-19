@@ -8,8 +8,6 @@ from dotenv import load_dotenv
 
 from src.modules.helper.helper import Helper
 
-
-
 load_dotenv(dotenv_path=os.path.join(Helper.ROOT, ".env"), override=False)
 
 
