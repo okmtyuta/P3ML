@@ -8,12 +8,14 @@ import torch
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.loggers import CSVLogger
 
-from src.modules.helper.helper import Helper
 from src.modules.dataloader.dataset import ProteinDataset, collate_fn
+from src.modules.helper.helper import Helper
 from src.modules.lit.lit import Lit
 from src.modules.model.regressor import Regressor
 from src.modules.protein.protein_list import ProteinList
 from src.modules.slack_service import SlackService
+
+code = Path(__file__).stem
 
 output_props: list[str] = ["log_halflife"]
 input_props: list[str] = []
@@ -70,7 +72,7 @@ def train():
     early_stop = EarlyStopping(monitor="val/accuracy", mode="max", patience=100)
     ckpt = ModelCheckpoint(monitor="val/accuracy", mode="max", save_top_k=1, filename="best")
 
-    logger = CSVLogger("logs", name=Path(__file__).stem)
+    logger = CSVLogger("logs", name=code)
 
     trainer = plg.Trainer(
         accelerator="cpu",
@@ -89,11 +91,12 @@ def train():
 
     result["random_split_seed"] = random_split_seed
 
-    with open(Path(logger.log_dir) / "result.json", mode="w") as f:
-        f.write(json.dumps(result))
+    return result
 
 
-def main():
+def main() -> None:
+    results: list[dict] = []
+
     server_name = platform.node()
     slack_service = SlackService()
 
@@ -102,8 +105,12 @@ def main():
     except Exception as e:
         print(f"Slack notification was failed because of {e}")
 
-    for _ in range(50):
-        train()
+    for _ in range(1):
+        result = train()
+        results.append(result)
+
+        with open(Helper.ROOT / "logs" / code / "results.json", mode="w") as f:
+            f.write(json.dumps(results))
 
     try:
         slack_service.send(f"[{server_name}] training end")
