@@ -105,7 +105,7 @@ def main() -> None:
     except Exception as e:
         print(f"Slack notification was failed because of {e}")
 
-    for _ in range(50):
+    for _ in range(10):
         result = train()
         results.append(result)
 
