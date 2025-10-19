@@ -98,7 +98,7 @@ def main():
     except Exception as e:
         print(f"Slack notification was failed because of {e}")
 
-    for _ in range(3):
+    for _ in range(50):
         train()
 
     try:
