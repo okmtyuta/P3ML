@@ -34,7 +34,7 @@ dataset = ProteinDataset(
 
 
 def train():
-    plg.seed_everything(42)
+    # plg.seed_everything(42)
 
     N = len(dataset)
     n_train = int(0.8 * N)
@@ -101,7 +101,7 @@ def main() -> None:
     slack_service = SlackService()
 
     try:
-        slack_service.send(f"[{server_name}] training started")
+        slack_service.send(f"[{server_name}] training started: {code}")
     except Exception as e:
         print(f"Slack notification was failed because of {e}")
 
@@ -109,11 +109,11 @@ def main() -> None:
         result = train()
         results.append(result)
 
-    with open(Helper.ROOT / "logs" / code / "results.json", mode="w") as f:
-        f.write(json.dumps(results))
+        with open(Helper.ROOT / "logs" / code / "results.json", mode="w") as f:
+            f.write(json.dumps(results))
 
     try:
-        slack_service.send(f"[{server_name}] training end")
+        slack_service.send(f"[{server_name}] training end: {code}")
     except Exception as e:
         print(f"Slack notification was failed because of {e}")
 
