@@ -8,27 +8,31 @@ import torch
 from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.loggers import CSVLogger
 
+from src.modules.helper.helper import Helper
 from src.modules.dataloader.dataset import ProteinDataset, collate_fn
 from src.modules.lit.lit import Lit
 from src.modules.model.regressor import Regressor
 from src.modules.protein.protein_list import ProteinList
 from src.modules.slack_service import SlackService
 
+output_props: list[str] = ["log_halflife"]
+input_props: list[str] = []
+
+regressor = Regressor(input_dim=1280, output_dim=1, hidden_dim=32, hidden_num=5)
+
+proteins = ProteinList.from_hdf5(
+    Helper.ROOT / "source" / "schwanhausser" / "esm2" / "logarithm.h5"
+).proteins
+
+dataset = ProteinDataset(
+    proteins=proteins,
+    output_props=output_props,
+    input_props=input_props,
+)
+
 
 def train():
     plg.seed_everything(42)
-    output_props = ["log_halflife"]
-    input_props = []
-
-    regressor = Regressor(input_dim=1280, output_dim=1, hidden_dim=32, hidden_num=5)
-
-    proteins = ProteinList.from_hdf5("source/schwanhausser/esm2/logarithm.h5").proteins
-
-    dataset = ProteinDataset(
-        proteins=proteins,
-        output_props=output_props,
-        input_props=input_props,
-    )
 
     N = len(dataset)
     n_train = int(0.8 * N)
