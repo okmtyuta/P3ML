@@ -21,7 +21,7 @@ def main() -> None:
         print(f"Slack notification was failed because of {e}")
 
     result = transfer_predict_hl_1(
-        code="EXP2", version="version_0", input_props=[], output_props=["log_halflife"], proteins=proteins
+        code="EXP2", version="version_6", input_props=[], output_props=["log_halflife"], proteins=proteins
     )
     result_dir = Helper.ROOT / "logs" / code
     result_dir.mkdir(parents=True, exist_ok=True)
