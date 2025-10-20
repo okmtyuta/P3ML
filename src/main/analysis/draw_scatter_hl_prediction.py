@@ -36,7 +36,7 @@ def draw_scatter_hl_prediction(code: str, dataset_name: str, language_name: str)
     pearsonr = stats.pearsonr(y, y_hat).correlation
     rmse = np.sqrt(np.mean((y - y_hat) ** 2))
 
-    plt.title(f"Pearson = {round(pearsonr, 4)}, RMSE = {round(rmse, 4)}, language = {language_name}")
+    plt.title(f"Pearson = {round(pearsonr, 4)}, RMSE = {round(rmse, 4)}")
 
     dir = Helper.ROOT / "output" / "figures" / "scatter_prediction_hl" / code
     dir.mkdir(exist_ok=True, parents=True)
