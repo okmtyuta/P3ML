@@ -39,4 +39,5 @@ def transfer_predict_hl_1(
         enable_checkpointing=False,
     )
 
-    return trainer.test(lit, dataloaders=dataloader)
+    result = trainer.test(lit, dataloaders=dataloader)
+    return result

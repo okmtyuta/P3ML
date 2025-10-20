@@ -1,3 +1,4 @@
+import json
 import platform
 from pathlib import Path
 
@@ -19,9 +20,14 @@ def main() -> None:
     except Exception as e:
         print(f"Slack notification was failed because of {e}")
 
-    transfer_predict_hl_1(
+    result = transfer_predict_hl_1(
         code="EXP2", version="version_0", input_props=[], output_props=["log_halflife"], proteins=proteins
     )
+    result_dir = Helper.ROOT / "logs" / code
+    result_dir.mkdir(parents=True, exist_ok=True)
+
+    with open(result_dir / "result.json", mode="w") as f:
+        f.write(json.dumps(result[0]))
 
     try:
         slack_service.send(f"[{server_name}] transfer prediction end: {code}")
