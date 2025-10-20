@@ -38,6 +38,8 @@ def draw_scatter_hl_prediction(code: str, dataset_name: str, language_name: str)
 
     plt.title(f"Pearson = {round(pearsonr, 4)}, RMSE = {round(rmse, 4)}")
 
+    plt.legend()
+
     dir = Helper.ROOT / "output" / "figures" / "scatter_prediction_hl" / code
     dir.mkdir(exist_ok=True, parents=True)
     plt.savefig(dir / f"{dataset_name}_{language_name}.png")
