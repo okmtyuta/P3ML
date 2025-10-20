@@ -31,10 +31,10 @@ def aggregate_hl_prediction(code: str):
     summary_df = pl.from_dicts(data).sort("version")
     summary_df.write_csv(Helper.ROOT / "logs" / code / "summary.csv")
 
-    mean_pearsonr = df.select(pl.col("pearsonr").mean()).item()
-    mean_rmse = df.select(pl.col("rmse").mean()).item()
-    mean_mae = df.select(pl.col("mae").mean()).item()
-    mean_delta95 = df.select(pl.col("delta95").mean()).item()
+    mean_pearsonr = summary_df.select(pl.col("pearsonr").mean()).item()
+    mean_rmse = summary_df.select(pl.col("rmse").mean()).item()
+    mean_mae = summary_df.select(pl.col("mae").mean()).item()
+    mean_delta95 = summary_df.select(pl.col("delta95").mean()).item()
 
     mean_data = {"pearsonr": mean_pearsonr, "rmse": mean_rmse, "mae": mean_mae, "delta95": mean_delta95}
     with open(Helper.ROOT / "logs" / code / "mean.json", mode="w") as f:
