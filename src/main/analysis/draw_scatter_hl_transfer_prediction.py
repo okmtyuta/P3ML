@@ -20,7 +20,7 @@ def draw_scatter_hl_transfer_prediction(code: str, from_dataset_name: str, to_da
     xymin = min(df["halflife"].to_list() + df["halflife_pred"].to_list())
     xymax = max(df["halflife"].to_list() + df["halflife_pred"].to_list())
 
-    plt.plot([xymin, xymax], [xymin, xymax], color="red", linestyle="--", linewidth=1, label="y = x")
+    plt.plot([xymin, xymax], [xymin, xymax], color="red", linestyle="--", linewidth=1, label="Diagonal y = x")
     plt.grid()
 
     plt.xlabel("True $T_{1/2}$")
