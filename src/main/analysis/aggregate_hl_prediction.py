@@ -1,3 +1,5 @@
+import json
+
 import numpy as np
 import polars as pl
 from scipy import stats
@@ -26,4 +28,19 @@ def aggregate_hl_prediction(code: str):
         datum = {"version": version, "pearsonr": pearsonr, "rmse": rmse, "mae": mae, "delta95": delta95}
         data.append(datum)
 
-    pl.from_dicts(data).sort("version").write_csv(Helper.ROOT / "logs" / code / "summary.csv")
+    summary_df = pl.from_dicts(data).sort("version")
+    summary_df.write_csv(Helper.ROOT / "logs" / code / "summary.csv")
+
+    mean_pearsonr = df.select(pl.col("pearsonr").mean()).item()
+    mean_rmse = df.select(pl.col("rmse").mean()).item()
+    mean_mae = df.select(pl.col("mae").mean()).item()
+    mean_delta95 = df.select(pl.col("delta95").mean()).item()
+
+    mean_data = {"pearsonr": mean_pearsonr, "rmse": mean_rmse, "mae": mean_mae, "delta95": mean_delta95}
+    with open(Helper.ROOT / "logs" / code / "mean.json", mode="w") as f:
+        f.write(json.dumps(mean_data))
+
+
+if __name__ == "__main__":
+    for code in ["EXP1", "EXP2", "EXP3", "EXP4"]:
+        aggregate_hl_prediction(code=code)
