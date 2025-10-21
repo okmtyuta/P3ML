@@ -8,7 +8,7 @@ import polars as pl
 from src.modules.helper.helper import Helper
 
 
-def draw_histogram(df: pl.DataFrame, path: Path, title: str):
+def hl_draw_histogram(df: pl.DataFrame, path: Path, title: str):
     hls = df["log_halflife"].to_numpy()
 
     median = np.median(hls)
@@ -50,12 +50,12 @@ def draw_histogram(df: pl.DataFrame, path: Path, title: str):
     plt.savefig(path)
 
 
-s_df = pl.read_csv(Helper.ROOT / "data" / "schwanhausser" / "data.csv")
-z_df = pl.read_csv(Helper.ROOT / "data" / "zecha" / "data.csv")
+def main():
+    s_df = pl.read_csv(Helper.ROOT / "data" / "schwanhausser" / "data.csv")
+    z_df = pl.read_csv(Helper.ROOT / "data" / "zecha" / "data.csv")
 
-draw_histogram(
-    s_df, Helper.ROOT / "output" / "figures" / "log_schwanhausser_histoguram.png", "Dataset 1 $T_{1/2} distribution$"
-)
-draw_histogram(
-    z_df, Helper.ROOT / "output" / "figures" / "log_zecha_histoguram.png", "Dataset 2 $T_{1/2} distribution$"
-)
+    dir = Helper.ROOT / "output" / "figures" / "hl"
+    dir.mkdir(parents=True, exist_ok=True)
+
+    hl_draw_histogram(s_df, dir / "log_schwanhausser_histoguram.png", "Dataset 1 $T_{1/2} distribution$")
+    hl_draw_histogram(z_df, dir / "log_zecha_histoguram.png", "Dataset 2 $T_{1/2} distribution$")

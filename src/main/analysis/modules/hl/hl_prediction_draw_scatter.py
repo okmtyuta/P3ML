@@ -1,14 +1,19 @@
 import json
+
+import matplotlib.pyplot as plt
 import numpy as np
 import polars as pl
-import matplotlib.pyplot as plt
 from scipy import stats
 
 from src.modules.helper.helper import Helper
 
 
-def draw_scatter_hl_transfer_prediction(code: str, from_dataset_name: str, to_dataset_name: str, language_name: str):
-    df = pl.read_csv(Helper.ROOT / "logs" / code / "version_0" / "test_results.csv")
+def draw_scatter_hl_prediction(code: str, dataset_name: str, language_name: str):
+    with open(Helper.ROOT / "logs" / code / "note.json", mode="r") as f:
+        note = json.load(f)
+        basic_version = note["basic_version"]
+
+    df = pl.read_csv(Helper.ROOT / "logs" / code / basic_version / "test_results.csv")
     df = df.with_columns(pl.col("log_halflife_pred").exp().alias("halflife_pred"))
 
     plt.figure(figsize=(7, 7))
@@ -36,18 +41,18 @@ def draw_scatter_hl_transfer_prediction(code: str, from_dataset_name: str, to_da
 
     plt.legend()
 
-    dir = Helper.ROOT / "output" / "figures" / "scatter_prediction_hl" / code
+    dir = Helper.ROOT / "output" / "figures" / "hl" / f"basic_version_{basic_version}" / code
     dir.mkdir(exist_ok=True, parents=True)
-    plt.savefig(dir / f"{from_dataset_name}_to_{to_dataset_name}_{language_name}.png")
+    plt.savefig(dir / f"{dataset_name}_{language_name}.png")
 
 
 if __name__ == "__main__":
     items = [
-        ("EXP5", "schwanhausser", "zecha", "esm2"),
-        ("EXP6", "schwanhausser", "zecha", "saprot"),
-        ("EXP7", "zecha", "schwanhausser", "esm2"),
-        ("EXP8", "zecha", "schwanhausser", "saprot"),
+        ("EXP1", "schwanhausser", "esm2"),
+        ("EXP2", "schwanhausser", "saprot"),
+        ("EXP3", "zecha", "esm2"),
+        ("EXP4", "zecha", "saprot"),
     ]
 
-    for code, from_dataset_name, to_dataset_name, language_name in items:
-        draw_scatter_hl_transfer_prediction(code, from_dataset_name, to_dataset_name, language_name)
+    for code, dataset_name, language_name in items:
+        draw_scatter_hl_prediction(code, dataset_name, language_name)

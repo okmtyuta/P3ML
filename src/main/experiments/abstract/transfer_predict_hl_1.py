@@ -9,7 +9,14 @@ from src.modules.model.regressor import Regressor
 from src.modules.protein.protein import Protein
 
 
-def transfer_predict_hl_1(code: str, from_code: str, from_version: str, input_props: list[str], output_props: list[str], proteins: list[Protein]):
+def transfer_predict_hl_1(
+    code: str,
+    from_code: str,
+    from_version: str,
+    input_props: list[str],
+    output_props: list[str],
+    proteins: list[Protein],
+):
     regressor = Regressor(input_dim=1280 + len(input_props), output_dim=len(output_props), hidden_dim=32, hidden_num=5)
     regressor.load_state_dict(torch.load(Helper.ROOT / "logs" / from_code / from_version / "weight.pt"))
     dataset = ProteinDataset(
