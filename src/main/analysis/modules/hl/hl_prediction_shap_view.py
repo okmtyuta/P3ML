@@ -1,22 +1,54 @@
 # pip install shap html2image  # 画像化まで行う場合
 import numpy as np
 import shap
+import json
 
-# ===== データ =====
-tokens = ["Md", "Lw", "Ie"]
-values = np.array([0.02716848347336054, 0.043611083179712296, -0.004582919621546017], dtype=float)
+from src.modules.helper.helper import Helper
 
-# ★ ここがポイント： base_values は 1次元配列(長さ1)にする！
-base = np.array([0.5021830797195435], dtype=float)
+dir = Helper.ROOT / "output" / "shap" / "hl" / "EXP2" / "basic_version_version_6"
+with open(dir / "shapv_schwanhausser_580.json", mode="r") as f:
+    result = json.load(f)
 
-# ===== Explanation を正しく構築 =====
-ex = shap.Explanation(
-    values=values,  # (n_features,)
-    base_values=base,  # (1,)  ← 0次元にしない
-    data=np.array(tokens, dtype=object),  # (n_features,)
-    feature_names=list(tokens),
-)
+html_items: list[str] = []
 
-# ===== NotebookでHTML表示（動作確認） =====
-# shap.plots.text(ex)  # そのままNotebookに描画
-html_obj = shap.plots.text(ex, display=False)  # HTMLオブジェクトとして取得
+maxv = max(result["shap_values"])
+minv = min(result["shap_values"])
+
+
+def get_color(x):
+    w = 90
+    if x > 0:
+        s = min(x / maxv, 1) * 100
+        return (100, 100 - s, 100 - s)  # 赤成分を強く
+    elif x < 0:
+        s = min(abs(x) / abs(minv), 1) * 100
+        return (100 - s, 100 - s, 100)  # 青成分を強く
+    else:
+        return (100, 100, 100)  # 白（ゼロ）
+
+
+for token, sv in zip(result["tokens"], result["shap_values"]):
+    clr = get_color(sv)
+    item = f"<span class='char' style='background-color: rgb({clr[0]}% {clr[1]}% {clr[2]}% / 70%);'>{token}</span>"
+    html_items.append(item)
+
+item = "".join(html_items)
+HTML = f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <link rel="stylesheet" href="test.css">
+    </head>
+    <body>
+        <div class='view'>
+            {item}
+        </div>
+    </body>
+    </html>
+"""
+
+with open("test.html", mode="w") as f:
+    f.write(HTML)

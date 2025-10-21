@@ -1,6 +1,7 @@
 import json
 import random
 from pathlib import Path
+from typing import Optional
 
 import pytorch_lightning as plg
 import torch
@@ -13,7 +14,7 @@ from src.modules.model.regressor import Regressor
 from src.modules.protein.protein import Protein
 
 
-def predict_hl_1(code: str, input_props: list[str], output_props: list[str], proteins: list[Protein]):
+def predict_hl_1(code: str, input_props: list[str], output_props: list[str], proteins: list[Protein], random_split_seed: Optional[int] = None):
     regressor = Regressor(input_dim=1280 + len(input_props), output_dim=len(output_props), hidden_dim=32, hidden_num=5)
     dataset = ProteinDataset(
         proteins=proteins,
@@ -26,7 +27,9 @@ def predict_hl_1(code: str, input_props: list[str], output_props: list[str], pro
     n_val = int(0.1 * N)
     n_test = N - n_train - n_val
 
-    random_split_seed = random.randint(0, 2**32 - 1)
+    if random_split_seed is None:
+        random_split_seed = random.randint(0, 2**32 - 1)
+
     train_set, val_set, test_set = torch.utils.data.random_split(
         dataset,
         [n_train, n_val, n_test],

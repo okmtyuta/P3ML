@@ -16,7 +16,7 @@ tokenizer = EsmTokenizer.from_pretrained("westlake-repl/SaProt_650M_AF2")
 regressor = Regressor(input_dim=1280, output_dim=1, hidden_dim=32, hidden_num=5)
 
 seqs = [
-    "MdLwIeKwVeKaTeLpTvGrKdEiIdEiIdDdIdEdPqTaDqKfVpElRvIvKlEvRrVvEcEvKvEpGvIdPhPsQvQqQkRfLkIdYdSpGnKdQtMgNdDrErKdTgAnAvDvYvKpInLdGhGhShVyLiHyLiVdLtAdLdRpGpGdGpGpLpGdQd"
+    "MdSdDpTdApVdAdDpTpRdRdLdNdSdKdPdQdDdLpTcDrAvYpGpPdPdSqNwFdLkEaIkDaIwFdNdPwQdTwVdGdVdGdRlApRiFfTiTkYtEwViRwMmRaTiNpLdPpIlFaKpLdKrEiSdCiVeRiRdRgYpSvDlFvEvWvLlKqNvElLcEvRvDpShKpIdVpVqPdPdLaPdGdKpAqLpKvRlQsLdPpFdRdGpDdEnGrIcFpEpEpSvFnIvEvEsRnRsQvGrLvEnQvFrIlNvKvIqAcGpHdPpLrAsQsNqEwRpCsLnHnMcFsLhQhEpEhAdIdDdRpNpYdVdPtGdKtVpLpGdLpHpWvLvLpSpMdRd"  # 1726
 ]
 
 
@@ -71,7 +71,7 @@ def explain(regressor: Regressor, seqs: list[str]):
     return result
 
 
-def hl_prediction_shap(code: str):
+def hl_prediction_shap(code: str, dataset_name: str, key: str):
     with open(Helper.ROOT / "logs" / code / "note.json", mode="r") as f:
         note = json.load(f)
         basic_version = note["basic_version"]
@@ -84,9 +84,9 @@ def hl_prediction_shap(code: str):
     dir = Helper.ROOT / "output" / "shap" / "hl" / code / f"basic_version_{basic_version}"
     dir.mkdir(parents=True, exist_ok=True)
 
-    with open(dir / "shapv.json", mode="w") as f:
+    with open(dir / f"shapv_{dataset_name}_{key}.json", mode="w") as f:
         f.write(json.dumps(result))
 
 
 if __name__ == "__main__":
-    hl_prediction_shap("EXP2")
+    hl_prediction_shap(code="EXP2", dataset_name="schwanhausser", key="580")
