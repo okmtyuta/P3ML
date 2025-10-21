@@ -15,8 +15,10 @@ dependencies = [
     "ruff>=0.13.1",
     "schedulefree>=1.4.1",
     "scipy>=1.16.2",
+    "shap>=0.49.1",
     "torch>=2.8.0",
     "torchmetrics>=1.8.2",
+    "transformers>=4.57.1",
 ]
 
 [tool.ruff.lint]
