@@ -59,3 +59,6 @@ def main():
 
     hl_draw_histogram(s_df, dir / "log_schwanhausser_histoguram.png", "Dataset 1 $T_{1/2} distribution$")
     hl_draw_histogram(z_df, dir / "log_zecha_histoguram.png", "Dataset 2 $T_{1/2} distribution$")
+
+if __name__ == '__main__':
+    main()
