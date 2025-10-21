@@ -19,7 +19,7 @@ def main() -> None:
     except Exception as e:
         print(f"Slack notification was failed because of {e}")
 
-    predict_hl_1(code, input_props=[], output_props=["log_halflife"], proteins=proteins, random_split_seed=2154470108)
+    predict_hl_1(code, input_props=[], output_props=["log_halflife"], proteins=proteins, random_split_seed=2236477679)
 
     try:
         slack_service.send(f"[{server_name}] training end: {code}")
