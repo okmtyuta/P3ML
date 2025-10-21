@@ -41,7 +41,7 @@ def draw_scatter_hl_prediction(code: str, dataset_name: str, language_name: str)
 
     plt.legend()
 
-    dir = Helper.ROOT / "output" / "figures" / "hl" / f"basic_version_{basic_version}" / code
+    dir = Helper.ROOT / "output" / "figures" / "hl" / code / f"basic_version_{basic_version}"
     dir.mkdir(exist_ok=True, parents=True)
     plt.savefig(dir / f"{dataset_name}_{language_name}.png")
 
