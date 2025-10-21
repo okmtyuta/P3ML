@@ -1,6 +1,4 @@
 # pip install shap html2image  # 画像化まで行う場合
-import numpy as np
-import shap
 import json
 
 from src.modules.helper.helper import Helper
@@ -16,7 +14,6 @@ minv = min(result["shap_values"])
 
 
 def get_color(x):
-    w = 90
     if x > 0:
         s = min(x / maxv, 1) * 100
         return (100, 100 - s, 100 - s)  # 赤成分を強く

@@ -1,13 +1,13 @@
 import platform
 from pathlib import Path
 
-from src.main.experiments.abstract.predict_hl_1 import predict_hl_1
+from src.main.experiments.abstract.predict_onehot_ccs_1 import predict_onehot_ccs_1
 from src.modules.helper.helper import Helper
 from src.modules.protein.protein_list import ProteinList
 from src.modules.slack_service import SlackService
 
 code = Path(__file__).stem
-proteins = ProteinList.from_hdf5(Helper.ROOT / "source" / "schwanhausser" / "saprot" / "saprot_logarithm.h5").proteins
+proteins = ProteinList.from_hdf5(Helper.ROOT / "source" / "ishihama" / "onehot" / "data.h5").proteins
 
 
 def main() -> None:
@@ -19,7 +19,8 @@ def main() -> None:
     except Exception as e:
         print(f"Slack notification was failed because of {e}")
 
-    predict_hl_1(code, input_props=[], output_props=["log_halflife"], proteins=proteins, random_split_seed=242045628)
+    for _ in range(1):
+        predict_onehot_ccs_1(code, input_props=["charge", "length"], output_props=["ccs"], proteins=proteins)
 
     try:
         slack_service.send(f"[{server_name}] training end: {code}")

@@ -1,4 +1,7 @@
+import json
+import random
 from pathlib import Path
+from typing import Optional
 
 import pytorch_lightning as plg
 import torch
@@ -7,38 +10,34 @@ from pytorch_lightning.loggers import CSVLogger
 
 from src.modules.dataloader.dataset import ProteinDataset, collate_fn
 from src.modules.lit.lit import Lit
-from src.modules.model.ccs_regressor import CCSRegressor
+from src.modules.model.ccs_regressor import CCSRegressor_10
 from src.modules.model.modules.concat import Concat
-from src.modules.model.modules.head import Head
+from src.modules.model.modules.head import FCNHead
 from src.modules.model.modules.mean_aggregator import MeanAggregator
 from src.modules.model.modules.onehot_embedded import OnehotEmbedded
-from src.modules.model.modules.sinusoidal_positional_encoder import SinusoidalPositionalEncoder
-from src.modules.protein.protein_list import ProteinList
+from src.modules.protein.protein import Protein
 
 
-def main():
+def predict_onehot_ccs_2(
+    code: str,
+    input_props: list[str],
+    output_props: list[str],
+    proteins: list[Protein],
+    random_split_seed: Optional[int] = None,
+):
     embed = OnehotEmbedded(aa_dim=20, out_dim=64)
-    posenc = SinusoidalPositionalEncoder(d_model=64, max_len=4096)
-    pool = MeanAggregator()
+    aggregator = MeanAggregator()
     concat = Concat()
-    head = Head(in_dim=64 + 1, hidden_dim=64, out_dim=1)
+    head = FCNHead(input_dim=64 + len(input_props), output_dim=len(output_props), hidden_dim=64, hidden_num=5)
 
-    regressor = CCSRegressor(
+    regressor = CCSRegressor_10(
         embed=embed,
-        posenc=posenc,
-        pool=pool,
+        aggregator=aggregator,
         concat=concat,
         head=head,
     )
 
-    proteins = ProteinList.from_hdf5("source/ishihama/onehot.h5").proteins
-
-    code = Path(__file__).stem
-
-    plg.seed_everything(42)
-
-    output_props = ["ccs"]
-    input_props = ["charge"]
+    print(regressor)
 
     dataset = ProteinDataset(
         proteins=proteins,
@@ -51,10 +50,13 @@ def main():
     n_val = int(0.1 * N)
     n_test = N - n_train - n_val
 
+    if random_split_seed is None:
+        random_split_seed = random.randint(0, 2**32 - 1)
+
     train_set, val_set, test_set = torch.utils.data.random_split(
         dataset,
         [n_train, n_val, n_test],
-        generator=torch.Generator().manual_seed(0),
+        generator=torch.Generator().manual_seed(random_split_seed),
     )
 
     train_loader = torch.utils.data.DataLoader(
@@ -86,7 +88,6 @@ def main():
     trainer = plg.Trainer(
         accelerator="cpu",
         devices=1,
-        max_epochs=5,
         callbacks=[early_stop, ckpt],
         logger=logger,
         precision="32-true",
@@ -95,9 +96,8 @@ def main():
 
     trainer.fit(lit, train_dataloaders=train_loader, val_dataloaders=val_loader)
     trainer.test(lit, dataloaders=test_loader, ckpt_path=ckpt.best_model_path)
+    torch.save(regressor.state_dict(), Path(logger.log_dir) / "weight.pt")
 
-    torch.save(regressor.state_dict(), f"{logger.log_dir}/weight.pt")
-
-
-if __name__ == "__main__":
-    main()
+    meta = {"random_split_seed": random_split_seed}
+    with open(Path(logger.log_dir) / "meta.json", mode="w") as f:
+        f.write(json.dumps(meta))

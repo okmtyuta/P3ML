@@ -10,18 +10,36 @@ from pytorch_lightning.loggers import CSVLogger
 
 from src.modules.dataloader.dataset import ProteinDataset, collate_fn
 from src.modules.lit.lit import Lit
-from src.modules.model.regressor import Regressor
+from src.modules.model.ccs_regressor import CCSRegressor_9
+from src.modules.model.modules.concat import Concat
+from src.modules.model.modules.head import FCNHead
+from src.modules.model.modules.mean_aggregator import MeanAggregator
+from src.modules.model.modules.onehot_embedded import OnehotEmbedded
+from src.modules.model.modules.sinusoidal_positional_encoder import SinusoidalPositionalEncoder
 from src.modules.protein.protein import Protein
 
 
-def predict_hl_1(
+def predict_onehot_ccs_1(
     code: str,
     input_props: list[str],
     output_props: list[str],
     proteins: list[Protein],
     random_split_seed: Optional[int] = None,
 ):
-    regressor = Regressor(input_dim=1280 + len(input_props), output_dim=len(output_props), hidden_dim=32, hidden_num=5)
+    embed = OnehotEmbedded(aa_dim=20, out_dim=64)
+    posenc = SinusoidalPositionalEncoder(d_model=64, max_len=4096)
+    aggregator = MeanAggregator()
+    concat = Concat()
+    head = FCNHead(input_dim=64 + len(input_props), output_dim=len(output_props), hidden_dim=64, hidden_num=5)
+
+    regressor = CCSRegressor_9(
+        embed=embed,
+        posenc=posenc,
+        aggregator=aggregator,
+        concat=concat,
+        head=head,
+    )
+
     dataset = ProteinDataset(
         proteins=proteins,
         output_props=output_props,

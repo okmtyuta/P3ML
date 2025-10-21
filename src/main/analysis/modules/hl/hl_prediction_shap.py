@@ -1,15 +1,13 @@
-import torch
+import json
 
-from src.modules.protein.protein_list import ProteinList
+import numpy as np
+import shap
+import torch
+from transformers import EsmTokenizer
+
+from src.modules.extract.language.saprot.saprot_converter import SaProtConverter
 from src.modules.helper.helper import Helper
 from src.modules.model.regressor import Regressor
-from src.modules.extract.language.saprot.saprot_converter import SaProtConverter
-import shap
-from transformers import EsmTokenizer
-import numpy as np
-import matplotlib.pyplot as plt
-import json
-import polars as pl
 
 converter = SaProtConverter()
 tokenizer = EsmTokenizer.from_pretrained("westlake-repl/SaProt_650M_AF2")

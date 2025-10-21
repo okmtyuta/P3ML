@@ -11,6 +11,7 @@ def draw_scatter_hl_transfer_prediction(code: str, from_dataset_name: str, to_da
     df = df.with_columns(pl.col("log_halflife_pred").exp().alias("halflife_pred"))
 
     plt.figure(figsize=(7, 7))
+    plt.ylim(0, 1)
     plt.scatter(df["halflife"], df["halflife_pred"], s=20)
 
     plt.xscale("log")
