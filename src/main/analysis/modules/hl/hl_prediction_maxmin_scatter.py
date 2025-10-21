@@ -23,6 +23,6 @@ def maxmin_scatter_hl_prediction(code: str):
 
 
 if __name__ == "__main__":
-    for code in ['EXP1', 'EXP2', 'EXP3', 'EXP4']:
+    for code in ['EXP1-1', 'EXP2-1', 'EXP3-1', 'EXP4-1']:
         result = maxmin_scatter_hl_prediction(code)
         print(code, result)

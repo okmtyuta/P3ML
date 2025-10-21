@@ -48,10 +48,10 @@ def draw_scatter_hl_prediction(code: str, dataset_name: str, language_name: str)
 
 if __name__ == "__main__":
     items = [
-        ("EXP1", "schwanhausser", "esm2"),
-        ("EXP2", "schwanhausser", "saprot"),
-        ("EXP3", "zecha", "esm2"),
-        ("EXP4", "zecha", "saprot"),
+        ("EXP1-1", "schwanhausser", "esm2"),
+        ("EXP2-1", "schwanhausser", "saprot"),
+        ("EXP3-1", "zecha", "esm2"),
+        ("EXP4-1", "zecha", "saprot"),
     ]
 
     for code, dataset_name, language_name in items:

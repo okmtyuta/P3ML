@@ -42,10 +42,10 @@ def draw_scatter_hl_transfer_prediction(code: str, from_dataset_name: str, to_da
 
 if __name__ == "__main__":
     items = [
-        ("EXP5", "schwanhausser", "zecha", "esm2"),
-        ("EXP6", "schwanhausser", "zecha", "saprot"),
-        ("EXP7", "zecha", "schwanhausser", "esm2"),
-        ("EXP8", "zecha", "schwanhausser", "saprot"),
+        ("EXP5-1", "schwanhausser", "zecha", "esm2"),
+        ("EXP6-1", "schwanhausser", "zecha", "saprot"),
+        ("EXP7-1", "zecha", "schwanhausser", "esm2"),
+        ("EXP8-1", "zecha", "schwanhausser", "saprot"),
     ]
 
     for code, from_dataset_name, to_dataset_name, language_name in items:
