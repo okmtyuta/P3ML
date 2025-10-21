@@ -45,7 +45,9 @@ def create_region(df: pl.DataFrame):
 
 def create_region_df(df: pl.DataFrame):
     region = create_region(df=df)
-    df = df.with_columns(pl.struct(["halflife", "halflife_pred"]).map_elements(region, return_dtype=pl.Utf8).alias("region"))
+    df = df.with_columns(
+        pl.struct(["halflife", "halflife_pred"]).map_elements(region, return_dtype=pl.Utf8).alias("region")
+    )
 
     return df
 
@@ -63,7 +65,9 @@ def hl_prediction_true_ratio_scatter(code: str):
     plt.figure(figsize=(7, 7))
     for reg, config in COLORS.items():
         sub = df.filter(pl.col("region") == reg)
-        plt.scatter(sub["halflife"], sub["halflife_pred"], label=config["label"], color=config["color"], s=20, edgecolors="none")
+        plt.scatter(
+            sub["halflife"], sub["halflife_pred"], label=config["label"], color=config["color"], s=20, edgecolors="none"
+        )
 
     plt.xscale("log")
     plt.yscale("log")
